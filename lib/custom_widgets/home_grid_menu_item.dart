@@ -1,20 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_refresh_demo/menu_count/menu_count_bloc.dart';
 import 'package:flutter_refresh_demo/menu_count/menu_count_page.dart';
+
+import '../menu_count/menu_count_bloc.dart';
+import '../menu_count/menu_count_state.dart';
 
 class HomeGridMenuItem extends StatelessWidget {
   final String label;
   final IconData icon;
-  final bool itemCountExist;
-  final int itemCount;
 
-  HomeGridMenuItem({
-    this.label,
-    this.icon,
-    this.itemCountExist,
-    this.itemCount,
-  });
+  HomeGridMenuItem({this.label, this.icon});
 
   @override
   Widget build(BuildContext context) {
@@ -29,13 +24,9 @@ class HomeGridMenuItem extends StatelessWidget {
               vertical: 8.0,
             ),
             decoration: BoxDecoration(
-              border: Border.all(
-                color: Colors.grey,
-              ),
+              border: Border.all(color: Colors.grey),
               borderRadius: BorderRadius.all(
-                Radius.circular(
-                  8.0,
-                ),
+                Radius.circular(8.0),
               ),
             ),
             child: Column(
@@ -66,30 +57,34 @@ class HomeGridMenuItem extends StatelessWidget {
         Positioned(
           top: 0,
           right: 0,
-          child: Visibility(
-            visible: itemCountExist,
-            child: Container(
-              padding: EdgeInsets.symmetric(
-                horizontal: 14.0,
-                vertical: 5.0,
+          child: Container(
+            padding: EdgeInsets.symmetric(
+              horizontal: 14.0,
+              vertical: 5.0,
+            ),
+            decoration: BoxDecoration(
+              color: Colors.black38,
+              borderRadius: BorderRadius.only(
+                topRight: Radius.circular(5.0),
+                bottomLeft: Radius.circular(5.0),
               ),
-              decoration: BoxDecoration(
-                color: Colors.black38,
-                borderRadius: BorderRadius.only(
-                  topRight: Radius.circular(
-                    5.0,
+            ),
+            child: BlocBuilder<MenuCountBloc, MenuCountState>(
+              builder: (context, state) {
+                if (state is MenuCountFail) {
+                  return MenuCountPage(itemCount: 0);
+                } else if (state is MenuCountSuccess) {
+                  return MenuCountPage(itemCount: state.count);
+                }
+                return SizedBox(
+                  height: 15.0,
+                  width: 15.0,
+                  child: CircularProgressIndicator(
+                    strokeWidth: 3,
+                    backgroundColor: Colors.white60,
                   ),
-                  bottomLeft: Radius.circular(
-                    5.0,
-                  ),
-                ),
-              ),
-              child: BlocProvider(
-                create: (context) => MenuCountBloc(),
-                child: MenuCountPage(
-                  menuLabel: label,
-                ),
-              ),
+                );
+              },
             ),
           ),
         ),
